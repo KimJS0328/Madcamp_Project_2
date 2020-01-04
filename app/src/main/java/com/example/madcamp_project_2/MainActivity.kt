@@ -17,8 +17,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-
         setContentView(R.layout.activity_main)
 
         val fragmentAdapter = MyPagerAdapter(supportFragmentManager)
@@ -26,19 +24,6 @@ class MainActivity : AppCompatActivity() {
         viewpager_main.offscreenPageLimit = 2
 
         tabs_main.setupWithViewPager(viewpager_main)
-
-        try {
-            val info = packageManager.getPackageInfo(packageName, PackageManager.GET_SIGNATURES)
-
-            for (signature in info.signatures ) {
-                val md = MessageDigest.getInstance("SHA")
-                md.update(signature.toByteArray())
-                val str = Base64.encode(md.digest(), 0)
-                Log.e("Hash key", String(str))
-            }
-        }
-        catch (e: Exception) {}
-
     }
 
 }
