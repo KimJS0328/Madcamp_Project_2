@@ -3,11 +3,13 @@ package com.example.madcamp_project_2;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.login.LoginManager;
 import com.facebook.login.widget.LoginButton;
@@ -30,11 +32,22 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        AccessToken token = AccessToken.getCurrentAccessToken();
+
+        if (token != null && !token.isExpired()) {
+            Log.d("login", token.getUserId());
+            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+            intent.putExtra("USER_ID", token.getUserId());
+            startActivity(intent);
+            finish();
+        }
+
+
         mContext = getApplicationContext();
 
-
         mCallbackManager = CallbackManager.Factory.create();
-        mLoginCallback = new LoginCallback();
+        mLoginCallback = new LoginCallback(this);
 
         btn_facebook_login = (LoginButton) findViewById(R.id.btn_facebook_login);
         btn_facebook_login.setReadPermissions(Arrays.asList("public_profile", "email"));
