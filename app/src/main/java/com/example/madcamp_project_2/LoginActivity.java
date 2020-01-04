@@ -60,14 +60,6 @@ public class LoginActivity extends AppCompatActivity {
                 btn_facebook_login.performClick();
             }
         });
-
-        btn_custom_logout = (Button) findViewById(R.id.btn_custom_logout);
-        btn_custom_logout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                LoginManager.getInstance().logOut();
-;            }
-        });
     }
 
 

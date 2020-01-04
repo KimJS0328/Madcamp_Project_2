@@ -1,8 +1,10 @@
 package com.example.madcamp_project_2
 
+import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.util.Base64
 import android.util.Log
@@ -17,11 +19,18 @@ import java.security.MessageDigest
 
 
 class MainActivity : AppCompatActivity() {
+
+    private val PERMISSIONS_READ_CONTACTS = 1000
+    private val PERMISSIONS_READ_EXTERNAL_STORAGE = 1001
+    private val PERMISSIONS_ACCESS_MEDIA_LOCATION = 1002
+    private var isPermission = false
     private lateinit var userId: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        callPermission();
         userId = intent.getStringExtra("USER_ID")
 
         val fragmentAdapter = MyPagerAdapter(supportFragmentManager)
@@ -51,5 +60,35 @@ class MainActivity : AppCompatActivity() {
         return true
     }
 
+    private fun callPermission() {
+        // Check the SDK version and whether the permission is already granted or not.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(
+                arrayOf(Manifest.permission.READ_CONTACTS),
+                PERMISSIONS_READ_CONTACTS
+            )
+
+        } else {
+            isPermission = true
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(
+                arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+                PERMISSIONS_READ_EXTERNAL_STORAGE
+            )
+        } else {
+            isPermission = true
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.ACCESS_MEDIA_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(
+                arrayOf(Manifest.permission.ACCESS_MEDIA_LOCATION),
+                PERMISSIONS_ACCESS_MEDIA_LOCATION
+            )
+        } else {
+            isPermission = true
+        }
+    }
 
 }
