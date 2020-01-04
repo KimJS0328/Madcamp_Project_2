@@ -1,19 +1,25 @@
 package com.example.madcamp_project_2;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.login.LoginManager;
 import com.facebook.login.widget.LoginButton;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 
@@ -33,6 +39,32 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+            if(ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED
+                    && ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                startAct();
+            }
+            else {
+                requestPermissions(new String[]{Manifest.permission.READ_CONTACTS, Manifest.permission.READ_EXTERNAL_STORAGE}, 100);
+                //callback onRequestPermissionsResult
+            }
+        } else {
+            startAct();
+        }
+
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == 100) {
+            for (int i = 0; i < grantResults.length; ++i) {
+                if (grantResults[i] == PackageManager.PERMISSION_DENIED) finish();
+            }
+            startAct();
+        }
+    }
+
+    private void startAct() {
         AccessToken token = AccessToken.getCurrentAccessToken();
 
         if (token != null && !token.isExpired()) {
