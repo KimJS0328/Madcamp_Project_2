@@ -13,8 +13,9 @@ class LoginActivity : AppCompatActivity() {
     private val mCallbackManager = CallbackManager.Factory.create()
     private val mLoginCallback = LoginCallback()
 
-    override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
-        super.onCreate(savedInstanceState, persistentState)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
         setContentView(R.layout.activity_login)
 
         Log.e("success", "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
@@ -22,6 +23,7 @@ class LoginActivity : AppCompatActivity() {
         btn_facebook_login.setReadPermissions(listOf("public_profile", "email"))
         btn_facebook_login.registerCallback(mCallbackManager, mLoginCallback)
     }
+
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         mCallbackManager.onActivityResult(requestCode, resultCode, data)
