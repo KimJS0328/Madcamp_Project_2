@@ -7,11 +7,14 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.content.Context;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 
 import androidx.annotation.NonNull;
@@ -54,6 +57,30 @@ public class ContactsFragment extends Fragment {
                 Intent intent = new Intent(getContext(), addContactLayout.class);
                 startActivityForResult(intent, Code.requestCode);
 
+            }
+        });
+
+        //To Filtering
+        EditText editTextFilter = view.findViewById(R.id.editTextFilter);
+        editTextFilter.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                String filterText = s.toString();
+                if (filterText.length() >0){
+                    listView.setFilterText(filterText);
+                }else{
+                    listView.clearTextFilter();
+                }
             }
         });
     }

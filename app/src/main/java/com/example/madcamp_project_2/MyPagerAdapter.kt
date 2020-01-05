@@ -8,27 +8,27 @@ class MyPagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {
 
     override fun getItem(position: Int): Fragment {
         return when (position) {
-            else -> {
+            0 -> {
                 ContactsFragment()
             }
-            /*1 -> GalleryFragment()
+            1 -> GalleryFragment()
             else -> {
-                return CalendarFragment()
-            }*/
+                return Tab3Fragment()
+            }
         }
     }
 
     override fun getCount(): Int {
-        return 1
+        return 3
     }
 
     override fun getPageTitle(position: Int): CharSequence {
         return when (position) {
-            else -> "Contacts"
-            /*1 -> "Gallery"
+            0 -> "Contacts"
+            1 -> "Gallery"
             else -> {
-                return "Calendar"
-            }*/
+                return "Alarm"
+            }
         }
     }
 }

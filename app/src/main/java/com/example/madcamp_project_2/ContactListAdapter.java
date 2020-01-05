@@ -15,21 +15,26 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.io.InputStream;
 import java.util.ArrayList;
 
-public class ContactListAdapter extends BaseAdapter {
+public class ContactListAdapter extends BaseAdapter implements Filterable {
     LayoutInflater inflater = null;
     private ArrayList<ContactItem> m_oData = null;
-    private int nListCnt = 0;
+    private ArrayList<ContactItem> filtered_m_oData = m_oData;
     private Context mContext;
+
+    Filter listFilter;
+
     public ContactListAdapter(Context context, ArrayList<ContactItem> _oData)
     {
         m_oData = _oData;
-        nListCnt = m_oData.size();
+        filtered_m_oData = _oData;
         this.mContext = context;
     }
 
@@ -37,7 +42,7 @@ public class ContactListAdapter extends BaseAdapter {
     public int getCount()
     {
         Log.i("TAG", "getCount");
-        return nListCnt;
+        return filtered_m_oData.size();
     }
 
     @Override
@@ -55,13 +60,11 @@ public class ContactListAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent)
     {
+        final int pos = position;
+        final Context context = parent.getContext();
         if (convertView == null)
         {
-            final Context context = parent.getContext();
-            if (inflater == null)
-            {
-                inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            }
+            inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = inflater.inflate(R.layout.contact_listview, parent, false);
         }
 
@@ -70,7 +73,7 @@ public class ContactListAdapter extends BaseAdapter {
         TextView nameView = (TextView) convertView.findViewById(R.id.contact_name);
         TextView phoneNumView = (TextView) convertView.findViewById(R.id.contact_phonenum);
 
-        Bitmap tmp = loadContactPhoto(mContext.getContentResolver(),m_oData.get(position).getPerson_id(),m_oData.get(position).getPhoto_id());
+        Bitmap tmp = loadContactPhoto(mContext.getContentResolver(),filtered_m_oData.get(position).getPerson_id(),filtered_m_oData.get(position).getPhoto_id());
 
         if (tmp == null){
             Drawable drawable = mContext.getResources().getDrawable(R.mipmap.man);
@@ -79,16 +82,10 @@ public class ContactListAdapter extends BaseAdapter {
         }else{
             imageView.setImageBitmap(tmp);
         }
-        nameView.setText(m_oData.get(position).getUser_Name());
-        phoneNumView.setText(m_oData.get(position).getPhNumberChanged());
+        nameView.setText(filtered_m_oData.get(position).getUser_Name());
+        phoneNumView.setText(filtered_m_oData.get(position).getPhNumberChanged());
         return convertView;
     }
-
-    //button이 눌러졋을 떄 실행되는 onClick함수
-    public  void  onClick(View v){
-
-    }
-
 
     //to return bitmap contact image
     public Bitmap loadContactPhoto(ContentResolver cr, long id, long photo_id){
@@ -141,6 +138,54 @@ public class ContactListAdapter extends BaseAdapter {
         rBitmap = Bitmap.createScaledBitmap(oBitmap, (int) width, (int) height, true);
         return  rBitmap;
     }
+
+    private class ListFilter extends Filter {
+        @Override
+        protected  FilterResults performFiltering(CharSequence constraint){
+            FilterResults results = new FilterResults();
+
+            if (constraint == null || constraint.length() == 0) {
+                results.values = m_oData;
+                results.count = m_oData.size();
+            }else {
+                ArrayList<ContactItem> itemList = new ArrayList<ContactItem>();
+
+                for (ContactItem item : m_oData){
+                    if (item.getUser_Name().toUpperCase().contains(constraint.toString().toUpperCase()))
+                        itemList.add(item);
+                }
+                results.values = itemList;
+                results.count = itemList.size();
+            }
+            return results;
+        }
+
+        @Override
+        protected void publishResults(CharSequence constraint, FilterResults results){
+            //update listview by filtered data list.
+            filtered_m_oData = (ArrayList<ContactItem>) results.values;
+
+            //notify
+            if (results.count > 0){
+                notifyDataSetChanged();
+            }else{
+                notifyDataSetInvalidated();
+            }
+
+        }
+    }
+
+    @Override
+    public Filter getFilter() {
+        if (listFilter == null) {
+            listFilter = new ListFilter();
+        }
+        return listFilter;
+    }
+
+
+
+
 
 
 }

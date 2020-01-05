@@ -12,19 +12,11 @@
     tools:showIn="@layout/activity_main"
     android:id="@+id/content1">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="26sp"
-        android:layout_marginRight="8dp"
-        android:id="@+id/textView1"
-        android:text="SEARCH"
-        android:textColor="#ffffff"/>
-
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/textView1"
+        android:layout_toRightOf="@id/nextbtn"
+        android:hint="이름을 검색하세요"
         android:id="@+id/editTextFilter"/>
 
     <Button
