@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -55,7 +56,6 @@ public class Tab3Fragment extends Fragment {
         String date_text = new SimpleDateFormat("yyyy년 MM월 dd일 EE요일 a hh시 mm분 ", Locale.getDefault()).format(nextDate);
         Toast.makeText(getApplicationContext(),"[처음 실행시] 다음 알람은 " + date_text + "으로 알람이 설정되었습니다!", Toast.LENGTH_SHORT).show();
 
-
         // 이전 설정값으로 TimePicker 초기화
         Date currentTime = nextNotifyTime.getTime();
         SimpleDateFormat HourFormat = new SimpleDateFormat("kk", Locale.getDefault());
@@ -63,7 +63,6 @@ public class Tab3Fragment extends Fragment {
 
         int pre_hour = Integer.parseInt(HourFormat.format(currentTime));
         int pre_minute = Integer.parseInt(MinuteFormat.format(currentTime));
-
 
         if (Build.VERSION.SDK_INT >= 23 ){
             picker.setHour(pre_hour);
@@ -73,7 +72,6 @@ public class Tab3Fragment extends Fragment {
             picker.setCurrentHour(pre_hour);
             picker.setCurrentMinute(pre_minute);
         }
-
 
         Button button = (Button) view.findViewById(R.id.button);
         button.setOnClickListener(new View.OnClickListener() {
@@ -114,13 +112,12 @@ public class Tab3Fragment extends Fragment {
 
                 Date currentDateTime = calendar.getTime();
                 String date_text = new SimpleDateFormat("yyyy년 MM월 dd일 EE요일 a hh시 mm분 ", Locale.getDefault()).format(currentDateTime);
-                Toast.makeText(getApplicationContext(),date_text + "으로 알람이 설정되었습니다!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(),date_text + "으로 알람이 설정되었습니다", Toast.LENGTH_SHORT).show();
 
                 //  Preference에 설정한 값 저장
                 SharedPreferences.Editor editor = getActivity().getSharedPreferences("daily alarm", MODE_PRIVATE).edit();
                 editor.putLong("nextNotifyTime", (long)calendar.getTimeInMillis());
                 editor.apply();
-
 
                 diaryNotification(calendar);
             }
@@ -134,9 +131,10 @@ public class Tab3Fragment extends Fragment {
 //        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
 //        Boolean dailyNotify = sharedPref.getBoolean(SettingsActivity.KEY_PREF_DAILY_NOTIFICATION, true);
         Boolean dailyNotify = true; // 무조건 알람을 사용
+        //후에 알람리스트에서 버튼을 만들어 이를 편집
 
-        PackageManager pm = getActivity().getPackageManager();
-        ComponentName receiver = new ComponentName(getActivity(), DeviceBootReceiver.class);
+//        PackageManager pm = getActivity().getPackageManager();
+//        ComponentName receiver = new ComponentName(getActivity(), DeviceBootReceiver.class);
         Intent alarmIntent = new Intent(getActivity(), AlarmReceiver.class);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(getActivity(), 0, alarmIntent, 0);
         AlarmManager alarmManager = (AlarmManager) getActivity().getSystemService(Context.ALARM_SERVICE);
@@ -156,10 +154,10 @@ public class Tab3Fragment extends Fragment {
                 }
             }
 
-            // 부팅 후 실행되는 리시버 사용가능하게 설정
-            pm.setComponentEnabledSetting(receiver,
-                    PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
-                    PackageManager.DONT_KILL_APP);
+//            // 부팅 후 실행되는 리시버 사용가능하게 설정
+//            pm.setComponentEnabledSetting(receiver,
+//                    PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
+//                    PackageManager.DONT_KILL_APP);
 
         }
 //        else { //Disable Daily Notifications

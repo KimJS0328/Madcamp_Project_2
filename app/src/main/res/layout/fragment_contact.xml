@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -8,29 +8,29 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
+    android:orientation="vertical"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:showIn="@layout/activity_main"
     android:id="@+id/content1">
 
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/nextbtn"
-        android:hint="이름을 검색하세요"
-        android:id="@+id/editTextFilter"/>
-
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/nextbtn"
-        android:text="연락처추가"
-        android:onClick="OnClickHandler"/>
+        android:id="@+id/addContactButton"
+        android:onClick="addContact"
+        android:text="연락처 추가"
+        />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="이름을 검색하세요"
+        android:id="@+id/editTextFilter"/>
 
     <ListView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/editTextFilter"
         android:textFilterEnabled="true"
         android:id="@+id/listview1"/>
 
-</RelativeLayout>
+</LinearLayout>

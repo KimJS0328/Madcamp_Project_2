@@ -1,37 +1,20 @@
 package com.example.madcamp_project_2;
 
+import android.graphics.Bitmap;
+
 import java.io.Serializable;
 
 public class ContactItem implements Serializable {
     private String user_phNumber, user_Name;
-    private long photo_id = 0, person_id = 0;
-    private int id;
+    private Bitmap user_photo;
 
     public ContactItem(){
-    }
-    public long getPhoto_id(){
-        return photo_id;
-    }
-    public long getPerson_id(){
-        return person_id;
-    }
-    public void setPhoto_id(long id){
-        this.photo_id = id;
-    }
-    public void setPerson_id(long id){
-        this.person_id = id;
     }
     public String getUser_phNumber(){
         return user_phNumber;
     }
     public  String getUser_Name(){
         return user_Name;
-    }
-    public void setId(int id){
-        this.id = id;
-    }
-    public int getId(){
-        return id;
     }
     public void setUser_phNumber(String string){
         this.user_phNumber = string;
@@ -55,6 +38,14 @@ public class ContactItem implements Serializable {
         if(o instanceof ContactItem)
             return getPhNumberChanged().equals((((ContactItem) o).getPhNumberChanged()));
         return false;
+    }
+
+    public Bitmap getUser_photo() {
+        return user_photo;
+    }
+
+    public void setUser_photo(Bitmap user_photo) {
+        this.user_photo = user_photo;
     }
 }
 

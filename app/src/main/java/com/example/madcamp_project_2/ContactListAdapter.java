@@ -73,7 +73,7 @@ public class ContactListAdapter extends BaseAdapter implements Filterable {
         TextView nameView = (TextView) convertView.findViewById(R.id.contact_name);
         TextView phoneNumView = (TextView) convertView.findViewById(R.id.contact_phonenum);
 
-        Bitmap tmp = loadContactPhoto(mContext.getContentResolver(),filtered_m_oData.get(position).getPerson_id(),filtered_m_oData.get(position).getPhoto_id());
+        Bitmap tmp = filtered_m_oData.get(position).getUser_photo();
 
         if (tmp == null){
             Drawable drawable = mContext.getResources().getDrawable(R.mipmap.man);
@@ -85,34 +85,6 @@ public class ContactListAdapter extends BaseAdapter implements Filterable {
         nameView.setText(filtered_m_oData.get(position).getUser_Name());
         phoneNumView.setText(filtered_m_oData.get(position).getPhNumberChanged());
         return convertView;
-    }
-
-    //to return bitmap contact image
-    public Bitmap loadContactPhoto(ContentResolver cr, long id, long photo_id){
-        Uri uri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, id);
-        InputStream input = ContactsContract.Contacts.openContactPhotoInputStream(cr, uri);
-        if (input != null)
-            return resizingBitmap(BitmapFactory.decodeStream(input));
-        else
-            Log.d("PHOTO","first try failed to load photo");
-
-        byte[] photoBytes = null;
-        Uri photoUri = ContentUris.withAppendedId(ContactsContract.Data.CONTENT_URI, photo_id);
-        Cursor c = cr.query(photoUri, new String[]{ContactsContract.CommonDataKinds.Photo.PHOTO},null,null,null );
-        try{
-            if(c.moveToFirst())
-                photoBytes = c.getBlob(0);
-        }catch (Exception e){
-            e.printStackTrace();
-        }finally {
-            c.close();
-        }
-
-        if (photoBytes != null)
-            return resizingBitmap(BitmapFactory.decodeByteArray(photoBytes,0,photoBytes.length));
-        else
-            Log.d("PHOTO","second try also failed");
-        return null;
     }
 
     public Bitmap resizingBitmap(Bitmap oBitmap){
