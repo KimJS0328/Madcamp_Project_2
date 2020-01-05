@@ -13,7 +13,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
@@ -41,12 +40,8 @@ public class Tab3Fragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState){
         super.onViewCreated(view, savedInstanceState);
 
-
-        final DatePicker datePicker = (DatePicker) view.findViewById(R.id.datePicker);
-        final TimePicker timePicker =(TimePicker) view.findViewById(R.id.timePicker);
-        timePicker.setIs24HourView(true);
-
-
+        final TimePicker picker=(TimePicker) view.findViewById(R.id.timePicker);
+        picker.setIs24HourView(true);
 
         //앞서 설정한 값 보여주고 없으면 디폴트값은 현재시간
 
@@ -71,12 +66,12 @@ public class Tab3Fragment extends Fragment {
 
 
         if (Build.VERSION.SDK_INT >= 23 ){
-            timePicker.setHour(pre_hour);
-            timePicker.setMinute(pre_minute);
+            picker.setHour(pre_hour);
+            picker.setMinute(pre_minute);
         }
         else{
-            timePicker.setCurrentHour(pre_hour);
-            timePicker.setCurrentMinute(pre_minute);
+            picker.setCurrentHour(pre_hour);
+            picker.setCurrentMinute(pre_minute);
         }
 
 
@@ -88,12 +83,12 @@ public class Tab3Fragment extends Fragment {
                 int hour, hour_24, minute;
                 String am_pm;
                 if (Build.VERSION.SDK_INT >= 23 ){
-                    hour_24 = timePicker.getHour();
-                    minute = timePicker.getMinute();
+                    hour_24 = picker.getHour();
+                    minute = picker.getMinute();
                 }
                 else{
-                    hour_24 = timePicker.getCurrentHour();
-                    minute = timePicker.getCurrentMinute();
+                    hour_24 = picker.getCurrentHour();
+                    minute = picker.getCurrentMinute();
                 }
                 if(hour_24 > 12) {
                     am_pm = "PM";
