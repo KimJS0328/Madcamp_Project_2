@@ -24,7 +24,10 @@ class MainActivity : AppCompatActivity() {
     private val PERMISSIONS_READ_EXTERNAL_STORAGE = 1001
     private val PERMISSIONS_ACCESS_MEDIA_LOCATION = 1002
     private var isPermission = false
-    private lateinit var userId: String
+    public lateinit var userId: String
+
+    private var backPressedTime: Long = 0
+    private var mOnBackPressedListener: onBackPressedListener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -88,6 +91,38 @@ class MainActivity : AppCompatActivity() {
             )
         } else {
             isPermission = true
+        }
+    }
+
+    interface onBackPressedListener {
+        fun onBack()
+    }
+
+    fun setOnBackPressedListener(mListener: onBackPressedListener?) {
+        mOnBackPressedListener = mListener
+    }
+
+    override fun onBackPressed() {
+        if (mOnBackPressedListener == null) {
+            if (backPressedTime == 0.toLong()) {
+                Toast.makeText(this, "Exit when back pressed once more", Toast.LENGTH_SHORT).show()
+                backPressedTime = System.currentTimeMillis()
+            }
+            else {
+                var seconds = System.currentTimeMillis() - backPressedTime
+
+                if (seconds > 2000.toLong()) {
+                    Toast.makeText(this, "Exit when back pressed once more", Toast.LENGTH_SHORT).show()
+                    backPressedTime = System.currentTimeMillis()
+                }
+                else {
+                    super.onBackPressed()
+                }
+            }
+
+        }
+        else {
+            mOnBackPressedListener!!.onBack();
         }
     }
 
