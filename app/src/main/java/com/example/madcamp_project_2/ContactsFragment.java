@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
@@ -24,14 +26,30 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
+import java.util.List;
+
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+import static android.app.Activity.RESULT_OK;
 
 public class ContactsFragment extends Fragment {
     private ContactListAdapter adapter;
     private ArrayList<ContactItem> contactItems = null;
     private ListView listView = null;
+    String userId;
 
     private Button addContactButton;
     @Nullable
@@ -46,6 +64,7 @@ public class ContactsFragment extends Fragment {
 
         listView = getView().findViewById(R.id.listview1);
         contactItems = new ArrayList<>();
+        userId = ((MainActivity)requireContext()).userId;
 
         addContactButton = view.findViewById(R.id.addContactButton);
         addContactButton.setOnClickListener(new View.OnClickListener() {
@@ -80,41 +99,25 @@ public class ContactsFragment extends Fragment {
                 }
             }
         });
+
+        RetrofitConnection retrofitConnection = new RetrofitConnection();
+        retrofitConnection.server.getContactList(userId).enqueue(new Callback<List<ContactItem>>() {
+            @Override
+            public void onResponse(Call<List<ContactItem>> call, Response<List<ContactItem>> response) {
+                if (response.isSuccessful()) {
+                    contactItems = new ArrayList<>(response.body());
+                    adapter = new ContactListAdapter(getContext(), contactItems);
+                    listView.setAdapter(adapter);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<ContactItem>> call, Throwable t) {
+
+            }
+        });
     }
 
-    public ArrayList<ContactItem> getContactList(){
-        Context context = this.getContext();
-        ContentResolver result = context.getContentResolver();
-
-        Uri uri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI;
-        String[] projection = new String[]{
-                ContactsContract.CommonDataKinds.Phone.NUMBER,
-                ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME,
-                ContactsContract.Contacts.PHOTO_ID,
-                ContactsContract.Contacts._ID
-        };
-        String[] selectionArgs = null;
-        String sortOrder = ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME +
-                " COLLATE LOCALIZED ASC";
-        Cursor cursor = result.query(uri, projection, null, selectionArgs, sortOrder);
-        LinkedHashSet<ContactItem> hashlist = new LinkedHashSet<>();
-        if (cursor.moveToFirst()){
-            do{
-                long photo_id = cursor.getLong(2);
-                long person_id = cursor.getLong(3);
-                Bitmap tmp = loadContactPhoto(getContext().getContentResolver(),person_id, photo_id);
-
-                ContactItem contactItem = new ContactItem();
-                contactItem.setUser_phNumber(cursor.getString(0));
-                contactItem.setUser_Name(cursor.getString(1));
-                contactItem.setUser_photo(resizingBitmap(tmp));
-
-                hashlist.add(contactItem);
-            }while (cursor.moveToNext());
-        }
-        ArrayList<ContactItem> contactItems = new ArrayList<>(hashlist);
-        return contactItems;
-    }
 
     public Bitmap loadContactPhoto(ContentResolver cr, long id, long photo_id){
         Uri uri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, id);
@@ -170,7 +173,7 @@ public class ContactsFragment extends Fragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data){
-        if(requestCode==0){
+        if(requestCode == 0 && resultCode == RESULT_OK){
             Context context = this.getContext();
             ContentResolver result = context.getContentResolver();
             String[] projection = new String[]{
@@ -190,15 +193,55 @@ public class ContactsFragment extends Fragment {
             long photo_id = cursor.getLong(2);
             long person_id = cursor.getLong(3);
             Bitmap tmp = loadContactPhoto(getContext().getContentResolver(),person_id, photo_id);
+            if (tmp == null) {
+                Drawable drawable = context.getResources().getDrawable(R.mipmap.man);
+                tmp = resizingBitmap(((BitmapDrawable)drawable).getBitmap());
+            }
 
-            ContactItem contactItem = new ContactItem();
+            final ContactItem contactItem = new ContactItem();
             contactItem.setUser_phNumber(cursor.getString(0));
             contactItem.setUser_Name(cursor.getString(1));
-            contactItem.setUser_photo(resizingBitmap(tmp));
+            contactItem.setUser_photo("");
 
-            contactItems.add(contactItem);
-            adapter = new ContactListAdapter(this.getContext(), contactItems);
-            listView.setAdapter(adapter);
+            File f = new File(context.getCacheDir(), "tmp");
+            try {
+                f.createNewFile();
+                ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                tmp.compress(Bitmap.CompressFormat.PNG, 0, bos);
+                byte[] bitmapdata = bos.toByteArray();
+
+                FileOutputStream fos = null;
+                fos = new FileOutputStream(f);
+                fos.write(bitmapdata);
+                fos.flush();
+                fos.close();
+
+                RequestBody reqFile = RequestBody.create(MediaType.parse("image/*"), f);
+                MultipartBody.Part body = MultipartBody.Part.createFormData("img", f.getName(), reqFile);
+
+                RetrofitConnection retrofitConnection = new RetrofitConnection();
+                retrofitConnection.server.createContact(userId, contactItem.getUser_Name(), contactItem.getUser_phNumber(), body).enqueue(new Callback<String>() {
+                    @Override
+                    public void onResponse(Call<String> call, Response<String> response) {
+                        if (response.isSuccessful()) {
+                            contactItem.setUser_photo(response.body());
+                            contactItems.add(contactItem);
+                            adapter = new ContactListAdapter(getContext(), contactItems);
+                            listView.setAdapter(adapter);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<String> call, Throwable t) {
+
+                    }
+                });
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
         }
     }
 

@@ -6,7 +6,7 @@ import java.io.Serializable;
 
 public class ContactItem implements Serializable {
     private String user_phNumber, user_Name;
-    private Bitmap user_photo;
+    private String user_photo;
 
     public ContactItem(){
     }
@@ -40,11 +40,11 @@ public class ContactItem implements Serializable {
         return false;
     }
 
-    public Bitmap getUser_photo() {
+    public String getUser_photo() {
         return user_photo;
     }
 
-    public void setUser_photo(Bitmap user_photo) {
+    public void setUser_photo(String user_photo) {
         this.user_photo = user_photo;
     }
 }

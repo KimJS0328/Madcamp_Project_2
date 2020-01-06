@@ -20,6 +20,8 @@ import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
 import java.io.InputStream;
 import java.util.ArrayList;
 
@@ -73,15 +75,11 @@ public class ContactListAdapter extends BaseAdapter implements Filterable {
         TextView nameView = (TextView) convertView.findViewById(R.id.contact_name);
         TextView phoneNumView = (TextView) convertView.findViewById(R.id.contact_phonenum);
 
-        Bitmap tmp = filtered_m_oData.get(position).getUser_photo();
+        String tmp = filtered_m_oData.get(position).getUser_photo();
 
-        if (tmp == null){
-            Drawable drawable = mContext.getResources().getDrawable(R.mipmap.man);
-            Bitmap bitmap = resizingBitmap(((BitmapDrawable)drawable).getBitmap());
-            imageView.setImageBitmap(bitmap);
-        }else{
-            imageView.setImageBitmap(tmp);
-        }
+        Picasso.with(context)
+                .load("http://192.249.19.250:7680/profile/" + tmp)
+                .into(imageView);
         nameView.setText(filtered_m_oData.get(position).getUser_Name());
         phoneNumView.setText(filtered_m_oData.get(position).getPhNumberChanged());
         return convertView;

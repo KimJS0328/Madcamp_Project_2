@@ -30,4 +30,11 @@ public interface RetrofitInterface {
     @GET("image/userId/{userId}/{image}")
     Call<String> deleteImage(@Path("userId") String userId, @Path("image") String image);
 
+    @GET("contact/userId/{userId}")
+    Call<List<ContactItem>> getContactList(@Path("userId") String userId);
+
+    @Multipart
+    @POST("contact/userId/{userId}/{name}/{phoneNumber}")
+    Call<String> createContact(@Path("userId") String userId, @Path("name") String name, @Path("phoneNumber") String phoneNumber, @Part MultipartBody.Part profile);
+
 }
