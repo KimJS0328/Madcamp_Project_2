@@ -37,4 +37,7 @@ public interface RetrofitInterface {
     @POST("contact/userId/{userId}/{name}/{phoneNumber}")
     Call<String> createContact(@Path("userId") String userId, @Path("name") String name, @Path("phoneNumber") String phoneNumber, @Part MultipartBody.Part profile);
 
+    @GET("contact/userId/{userId}/{name}/{phoneNumber}/{img}")
+    Call<String> deleteContact(@Path("userId") String userId, @Path("name") String name, @Path("phoneNumber") String phoneNumber, @Path("img") String img);
+
 }

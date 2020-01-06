@@ -2,6 +2,7 @@ package com.example.madcamp_project_2;
 
 import android.content.ContentResolver;
 import android.content.ContentUris;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -18,12 +19,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
 import java.io.ByteArrayInputStream;
@@ -73,6 +76,45 @@ public class ContactsFragment extends Fragment {
                 Intent intent = new Intent(Intent.ACTION_PICK);
                 intent.setData(ContactsContract.CommonDataKinds.Phone.CONTENT_URI);
                 startActivityForResult(intent,0);
+            }
+        });
+
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+
+                builder.setMessage("Are you sure you want to delete this event?")
+                        .setNegativeButton("No", null)
+                        .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                RetrofitConnection retrofitConnection = new RetrofitConnection();
+                                ContactItem tmp = contactItems.get(position);
+                                retrofitConnection.server.deleteContact(userId, tmp.getUser_Name(), tmp.getUser_phNumber(), tmp.getUser_photo())
+                                .enqueue(new Callback<String>() {
+                                    @Override
+                                    public void onResponse(Call<String> call, Response<String> response) {
+                                        if (response.isSuccessful()) {
+                                            Log.d("onResponse", "success");
+                                            contactItems.remove(position);
+                                            adapter = new ContactListAdapter(getContext(), contactItems);
+                                            listView.setAdapter(adapter);
+                                        }
+                                        else {
+                                            Log.d("onResponse", new String(response.toString()));
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onFailure(Call<String> call, Throwable t) {
+                                        Log.d("onFailure", t.toString());
+                                    }
+                                });
+                            }
+                        });
+                builder.show();
+                return false;
             }
         });
 
