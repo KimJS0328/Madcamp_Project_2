@@ -32,9 +32,14 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        callPermission();
+        callPermission()
 
-        //userId = intent.getStringExtra("USER_ID");
+        if (intent.getStringExtra("User_ID") != null)
+            userId = intent.getStringExtra("USER_ID")
+
+        if (intent.getStringExtra("contact") == "contact"){
+            //
+        }
 
         val fragmentAdapter = MyPagerAdapter(supportFragmentManager)
         viewpager_main.adapter = fragmentAdapter

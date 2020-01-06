@@ -1,5 +1,7 @@
 package com.example.madcamp_project_2;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -8,6 +10,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.media.MediaPlayer;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
@@ -26,7 +29,12 @@ import com.airbnb.lottie.LottieAnimationView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.GlideBuilder;
 
+import java.util.Calendar;
+import java.util.Date;
+
 public class StopAlarmActivity extends AppCompatActivity implements SensorEventListener {
+
+    String userid;
 
     private MediaPlayer mediaPlayer;
     Button button;
@@ -53,6 +61,7 @@ public class StopAlarmActivity extends AppCompatActivity implements SensorEventL
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_stopalarm);
+
         stepCount = findViewById(R.id.stepCount);
 
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
@@ -117,15 +126,23 @@ public class StopAlarmActivity extends AppCompatActivity implements SensorEventL
                     @Override
                     public void run()
                     {
-                        //새롭게 notification을 1분후에 설정
-                        //등록된 친구들에게 자신을 깨워달라는 메시지를 보냄
-                        onBackPressed();
+                        //새롭게 notification을 20초 후에 설정
+                        Calendar calendar = Calendar.getInstance();
+                        Date date = new Date();
+                        calendar.setTime(date);
+                        calendar.add(Calendar.SECOND, 20);
+                        diaryNotification(calendar);
+
+                        //등록된 친구들에게 자신을 깨워달라는 메시지를 보내기 위해 intent 전달
+                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                        intent.putExtra("contact", "'contact");
+                        setResult(1221, intent);
+                        startActivity(intent);
                     }
                 }, 1500);// 1.5초의 딜레이 후 시작됨
             }
         };
     }
-
 
     @Override
     public void onDestroy() {
@@ -179,5 +196,51 @@ public class StopAlarmActivity extends AppCompatActivity implements SensorEventL
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
+    }
+
+    void diaryNotification(Calendar calendar)
+    {
+//        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+//        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+//        Boolean dailyNotify = sharedPref.getBoolean(SettingsActivity.KEY_PREF_DAILY_NOTIFICATION, true);
+        Boolean dailyNotify = true; // 무조건 알람을 사용
+        //후에 알람리스트에서 버튼을 만들어 이를 편집
+
+//        PackageManager pm = getActivity().getPackageManager();
+//        ComponentName receiver = new ComponentName(getActivity(), DeviceBootReceiver.class);
+        Intent alarmIntent = new Intent(getApplicationContext(), AlarmReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, alarmIntent, 0);
+        AlarmManager alarmManager = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
+
+
+        // 사용자가 매일 알람을 허용했다면
+        if (dailyNotify) {
+
+
+            if (alarmManager != null) {
+
+                alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
+                        AlarmManager.INTERVAL_DAY, pendingIntent);
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+                }
+            }
+
+//            // 부팅 후 실행되는 리시버 사용가능하게 설정
+//            pm.setComponentEnabledSetting(receiver,
+//                    PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
+//                    PackageManager.DONT_KILL_APP);
+
+        }
+//        else { //Disable Daily Notifications
+//            if (PendingIntent.getBroadcast(this, 0, alarmIntent, 0) != null && alarmManager != null) {
+//                alarmManager.cancel(pendingIntent);
+//                //Toast.makeText(this,"Notifications were disabled",Toast.LENGTH_SHORT).show();
+//            }
+//            pm.setComponentEnabledSetting(receiver,
+//                    PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
+//                    PackageManager.DONT_KILL_APP);
+//        }
     }
 }

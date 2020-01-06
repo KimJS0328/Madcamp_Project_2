@@ -31,6 +31,9 @@ import static android.content.Context.MODE_PRIVATE;
 import static com.facebook.FacebookSdk.getApplicationContext;
 
 public class Tab3Fragment extends Fragment {
+
+    String userid;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -40,6 +43,8 @@ public class Tab3Fragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState){
         super.onViewCreated(view, savedInstanceState);
+
+        userid = ((MainActivity)requireContext()).userId;
 
         final TimePicker picker=(TimePicker) view.findViewById(R.id.timePicker);
         picker.setIs24HourView(true);
