@@ -3,10 +3,15 @@ package com.example.madcamp_project_2;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.TaskStackBuilder;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.MediaPlayer;
+import android.net.Uri;
+import android.os.Handler;
+import android.os.PowerManager;
 import android.widget.Toast;
 
 import androidx.core.app.NotificationCompat;
@@ -15,21 +20,32 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import static android.content.Context.MODE_PRIVATE;
 
 public class AlarmReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent){
-        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        Intent notificationIntent = new Intent(context, Tab3Fragment.class);
 
+        //소리재생
+        MediaPlayer mediaPlayer = MediaPlayer.create(context, R.raw.defaultalarm);
+        mediaPlayer.isLooping();
+        mediaPlayer.start();
+
+        final NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        Intent notificationIntent = new Intent(context, StopAlarmActivity.class);
         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|
                 Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
-        PendingIntent pendingI = PendingIntent.getActivity(context,0,notificationIntent,0);
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
+        stackBuilder.addParentStack(StopAlarmActivity.class);
+        stackBuilder.addNextIntent(notificationIntent);
 
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "default");
+        PendingIntent pendingI = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        final NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "default");
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
 
@@ -45,24 +61,36 @@ public class AlarmReceiver extends BroadcastReceiver {
 
             if (notificationManager != null) {
                 // 노티피케이션 채널을 시스템에 등록
+                channel.setSound(null, null);
                 notificationManager.createNotificationChannel(channel);
             }
         }else builder.setSmallIcon(R.mipmap.ic_launcher); // Oreo 이하에서 mipmap 사용하지 않으면 Couldn't create icon: StatusBarIcon 에러남
 
-        builder.setAutoCancel(true)
+        long[] vibrate = {0,100,200,300};
+
+        builder.setAutoCancel(true)//클릭하면 notification 날라감
                 .setDefaults(NotificationCompat.DEFAULT_ALL)
                 .setWhen(System.currentTimeMillis())
-
                 .setTicker("{Time to watch some cool stuff!}")
                 .setContentTitle("상태바 드래그시 보이는 타이틀")
                 .setContentText("상태바 드래그시 보이는 서브타이틀")
                 .setContentInfo("INFO")
+                .setVibrate(vibrate)
                 .setContentIntent(pendingI);
 
         if (notificationManager != null) {
 
+            //notification 발생시 화면이 꺼져있으면 켜지게 함
+            PowerManager powerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+            PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.FULL_WAKE_LOCK  |
+                    PowerManager.ACQUIRE_CAUSES_WAKEUP |
+                    PowerManager.ON_AFTER_RELEASE, "My:Tag");
+            wakeLock.acquire(5000);
+
             // 노티피케이션 동작시킴
             notificationManager.notify(1234, builder.build());
+
+
 
             Calendar nextNotifyTime = Calendar.getInstance();
 

@@ -28,7 +28,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity" android:windowSoftInputMode="stateAlwaysHidden"></activity>
+
+        <activity android:name=".MainActivity"
+            android:windowSoftInputMode="stateAlwaysHidden">
+        </activity>
 
         <receiver android:name=".DeviceBootReceiver"
             android:enabled="false">
@@ -38,6 +41,10 @@
         </receiver>
 
         <receiver android:name=".AlarmReceiver" />
+
+        <activity android:name=".StopAlarmActivity"
+            android:parentActivityName=".MainActivity">
+        </activity>
 
     </application>
 

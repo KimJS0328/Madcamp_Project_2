@@ -1,7 +1,6 @@
 package com.example.madcamp_project_2
 
 import android.Manifest
-import android.content.Intent
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.os.Build
@@ -16,6 +15,7 @@ import com.facebook.login.LoginManager
 import kotlinx.android.synthetic.main.activity_main.*
 import java.lang.Exception
 import java.security.MessageDigest
+import android.content.Intent as Intent1
 
 
 class MainActivity : AppCompatActivity() {
@@ -32,9 +32,9 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
         callPermission();
-        userId = intent.getStringExtra("USER_ID")
+
+        //userId = intent.getStringExtra("USER_ID");
 
         val fragmentAdapter = MyPagerAdapter(supportFragmentManager)
         viewpager_main.adapter = fragmentAdapter
@@ -57,7 +57,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun onLogout() : Boolean {
         LoginManager.getInstance().logOut()
-        val intent = Intent(this, LoginActivity::class.java)
+        val intent = Intent1(this, LoginActivity::class.java)
         startActivity(intent)
         finish()
         return true
