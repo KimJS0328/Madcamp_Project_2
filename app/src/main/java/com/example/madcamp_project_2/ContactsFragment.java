@@ -97,9 +97,7 @@ public class ContactsFragment extends Fragment {
                                     public void onResponse(Call<String> call, Response<String> response) {
                                         if (response.isSuccessful()) {
                                             Log.d("onResponse", "success");
-                                            contactItems.remove(position);
-                                            adapter = new ContactListAdapter(getContext(), contactItems);
-                                            listView.setAdapter(adapter);
+                                            adapter.deleteItem(position);
                                         }
                                         else {
                                             Log.d("onResponse", new String(response.toString()));
@@ -267,9 +265,7 @@ public class ContactsFragment extends Fragment {
                     public void onResponse(Call<String> call, Response<String> response) {
                         if (response.isSuccessful()) {
                             contactItem.setUser_photo(response.body());
-                            contactItems.add(contactItem);
-                            adapter = new ContactListAdapter(getContext(), contactItems);
-                            listView.setAdapter(adapter);
+                            adapter.addItem(contactItem);
                         }
                     }
 

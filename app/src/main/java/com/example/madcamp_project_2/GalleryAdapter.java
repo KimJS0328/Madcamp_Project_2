@@ -33,7 +33,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
                     if (pos != RecyclerView.NO_POSITION) {
                         if (imgClkListener != null && imgList != null) {
 
-                            imgClkListener.onImgClick(imgList.get(pos));
+                            imgClkListener.onImgClick(pos);
                         }
                     }
                 }
@@ -45,7 +45,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
                     int pos = getAdapterPosition();
                     if (pos != RecyclerView.NO_POSITION) {
                         if (imgLongClkListener != null && imgList != null) {
-                            imgLongClkListener.onImgLongClick(imgList.get(pos));
+                            imgLongClkListener.onImgLongClick(pos);
                             return true;
                         }
                     }
@@ -86,11 +86,11 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
     }
 
     public interface OnImgClickListener {
-        void onImgClick(String image);
+        void onImgClick(int pos);
     }
 
     public interface OnImgLongClickListener {
-        void onImgLongClick(String image);
+        void onImgLongClick(int pos);
     }
 
 
@@ -100,6 +100,16 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
 
     public void setOnImgLongClickListener(OnImgLongClickListener listener) {
         this.imgLongClkListener = listener;
+    }
+
+    public void addItem(String img) {
+        imgList.add(img);
+        notifyItemInserted(imgList.size() - 1);
+    }
+
+    public void deleteItem(int pos) {
+        imgList.remove(pos);
+        notifyItemRemoved(pos);
     }
 
 }

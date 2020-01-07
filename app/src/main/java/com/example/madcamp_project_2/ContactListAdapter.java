@@ -153,9 +153,13 @@ public class ContactListAdapter extends BaseAdapter implements Filterable {
         return listFilter;
     }
 
+    public void addItem(ContactItem contactItem) {
+        filtered_m_oData.add(contactItem);
+        notifyDataSetChanged();
+    }
 
-
-
-
-
+    public void deleteItem(int pos) {
+        filtered_m_oData.remove(pos);
+        notifyDataSetChanged();
+    }
 }

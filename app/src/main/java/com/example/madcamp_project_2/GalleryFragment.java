@@ -7,6 +7,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -36,8 +38,12 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,9 +62,13 @@ public class GalleryFragment extends Fragment implements MainActivity.onBackPres
     private RelativeLayout bigView;
     private ImageView bigImg;
     private Button backButton;
+    private Button infoButton;
     private Button shareButton;
+    private TextView infoText;
     private ImageButton addButton;
     private LinearLayout buttonLayout;
+    private GalleryAdapter adapter;
+
     private ArrayList<String> imgList = null;
     String userId;
 
@@ -78,8 +88,10 @@ public class GalleryFragment extends Fragment implements MainActivity.onBackPres
         bigImg = view.findViewById(R.id.imgView);
         buttonLayout = view.findViewById(R.id.ButtonLayout);
         backButton = view.findViewById(R.id.Back);
+        infoButton = view.findViewById(R.id.Info);
         shareButton = view.findViewById(R.id.Share);
         addButton = view.findViewById(R.id.addImage);
+        infoText = view.findViewById(R.id.Infotext);
         userId = ((MainActivity)requireContext()).userId;
 
         addButton.setOnClickListener(new View.OnClickListener() {
@@ -89,6 +101,13 @@ public class GalleryFragment extends Fragment implements MainActivity.onBackPres
                 intent.setType("image/*");
                 intent.setAction(Intent.ACTION_GET_CONTENT);
                 startActivityForResult(intent, 2);
+            }
+        });
+
+        infoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                infoText.setVisibility(View.VISIBLE);
             }
         });
 
@@ -106,22 +125,32 @@ public class GalleryFragment extends Fragment implements MainActivity.onBackPres
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                infoText.setVisibility(View.GONE);
                 bigView.setVisibility(View.GONE);
                 ((MainActivity)requireContext()).setOnBackPressedListener(null);
             }
         });
 
-        /*shareButton.setOnClickListener(new View.OnClickListener() {
+        shareButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(Intent.ACTION_SEND);
                 intent.setType("image/*");
-                Uri imgUri = FileProvider.getUriForFile(requireContext(), requireContext().getPackageName().concat(".provider"), new File(bigImg.getContentDescription().toString()));
-                intent.putExtra(Intent.EXTRA_STREAM, imgUri);
-                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                startActivity(Intent.createChooser(intent, "Share image"));
+                //Uri imgUri = FileProvider.getUriForFile(requireContext(), requireContext().getPackageName().concat(".provider"), new File(bigImg.getContentDescription().toString()));
+                try {
+                    URL url = new URL("http://192.249.19.250:7680/upload/" + bigImg.getContentDescription());
+                    Log.e("test", Uri.parse(url.toURI().toString()).toString());
+                    intent.putExtra(Intent.EXTRA_STREAM, Uri.parse(url.toURI().toString()));
+                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    startActivity(Intent.createChooser(intent, "Share image"));
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                } catch (URISyntaxException e) {
+                    e.printStackTrace();
+                }
+
             }
-        });*/
+        });
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
@@ -137,22 +166,42 @@ public class GalleryFragment extends Fragment implements MainActivity.onBackPres
         final RecyclerView rcView = view.findViewById(R.id.recyclerView);
         rcView.setItemViewCacheSize(20);
         rcView.setLayoutManager(new GridLayoutManager(getContext(), 2));
-        final GalleryAdapter adapter = new GalleryAdapter(imgList, getContext());
+        adapter = new GalleryAdapter(imgList, getContext());
         adapter.setOnImgClickListener(new GalleryAdapter.OnImgClickListener() {
             @Override
-            public void onImgClick(String image) {
+            public void onImgClick(int pos) {
                 Picasso.with(getContext())
-                        .load("http://192.249.19.250:7680/upload/" + image)
-                        .into(bigImg);
+                        .load("http://192.249.19.250:7680/upload/" + imgList.get(pos))
+                        .into(new Target() {
+                            @Override
+                            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                                infoText.setText(new String().concat("Image height: ")
+                                        .concat(String.valueOf(bitmap.getWidth()))
+                                        .concat("\n\nImage width: ")
+                                        .concat(String.valueOf(bitmap.getWidth())));
+                                bigImg.setImageBitmap(bitmap);
+                            }
+
+                            @Override
+                            public void onBitmapFailed(Drawable errorDrawable) {
+
+                            }
+
+                            @Override
+                            public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+                            }
+                        });
                 buttonLayout.setVisibility(View.VISIBLE);
                 bigView.setVisibility(View.VISIBLE);
+                bigImg.setContentDescription(imgList.get(pos));
                 ((MainActivity)requireContext()).setOnBackPressedListener(p2me);
             }
         });
 
         adapter.setOnImgLongClickListener(new GalleryAdapter.OnImgLongClickListener() {
             @Override
-            public void onImgLongClick(final String image) {
+            public void onImgLongClick(final int pos) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
 
                 builder.setMessage("Are you sure you want to delete this event?")
@@ -161,13 +210,12 @@ public class GalleryFragment extends Fragment implements MainActivity.onBackPres
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 RetrofitConnection retrofitConnection = new RetrofitConnection();
-                                retrofitConnection.server.deleteImage(userId, image).enqueue(new Callback<String>() {
+                                retrofitConnection.server.deleteImage(userId, imgList.get(pos)).enqueue(new Callback<String>() {
                                     @Override
                                     public void onResponse(Call<String> call, Response<String> response) {
                                         if (response.isSuccessful()) {
                                             Log.d("onResponse", "success");
-                                            imgList.remove(image);
-                                            setRecyclerView();
+                                            adapter.deleteItem(pos);
                                         }
                                         else {
                                             Log.d("onResponse", new String(response.toString()));
@@ -215,7 +263,10 @@ public class GalleryFragment extends Fragment implements MainActivity.onBackPres
 
     @Override
     public void onBack() {
-        if (bigView.getVisibility() == View.VISIBLE) {
+        if (infoText.getVisibility() == View.VISIBLE) {
+            infoText.setVisibility(View.GONE);
+        }
+        else if (bigView.getVisibility() == View.VISIBLE) {
             bigView.setVisibility(View.GONE);
             buttonLayout.setVisibility(View.GONE);
             ((MainActivity)requireContext()).setOnBackPressedListener(null);
@@ -238,7 +289,7 @@ public class GalleryFragment extends Fragment implements MainActivity.onBackPres
                 @Override
                 public void onResponse(Call<String> call, Response<String> response) {
                     if (response.isSuccessful()) {
-                        setView();
+                        adapter.addItem(response.body());
                     }
                     else {
                         Log.d("onResponse", "failure");

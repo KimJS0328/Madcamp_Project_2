@@ -82,6 +82,16 @@
 
         </LinearLayout>
 
+        <TextView
+            android:id="@+id/Infotext"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#70000000"
+            android:textColor="#FFFFFF"
+            android:visibility="gone"
+            android:text="No Information"
+            />
+
 
     </RelativeLayout>
 
