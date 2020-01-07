@@ -243,7 +243,7 @@ public class ContactsFragment extends Fragment {
             contactItem.setUser_Name(cursor.getString(1));
             contactItem.setUser_photo("");
 
-            File f = new File(context.getCacheDir(), "tmp");
+            File f = new File(context.getExternalCacheDir(), "tmp");
             try {
                 f.createNewFile();
                 ByteArrayOutputStream bos = new ByteArrayOutputStream();

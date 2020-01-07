@@ -41,6 +41,10 @@ import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -134,20 +138,40 @@ public class GalleryFragment extends Fragment implements MainActivity.onBackPres
         shareButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Intent.ACTION_SEND);
-                intent.setType("image/*");
-                //Uri imgUri = FileProvider.getUriForFile(requireContext(), requireContext().getPackageName().concat(".provider"), new File(bigImg.getContentDescription().toString()));
-                try {
-                    URL url = new URL("http://192.249.19.250:7680/upload/" + bigImg.getContentDescription());
-                    Log.e("test", Uri.parse(url.toURI().toString()).toString());
-                    intent.putExtra(Intent.EXTRA_STREAM, Uri.parse(url.toURI().toString()));
-                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                    startActivity(Intent.createChooser(intent, "Share image"));
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                } catch (URISyntaxException e) {
-                    e.printStackTrace();
-                }
+
+                new Thread() {
+                    public void run() {
+                        Intent intent = new Intent(Intent.ACTION_SEND);
+                        intent.setType("image/*");
+                        //Uri imgUri = FileProvider.getUriForFile(requireContext(), requireContext().getPackageName().concat(".provider"), new File(bigImg.getContentDescription().toString()));
+                        try {
+                            URL url = new URL("http://192.249.19.250:7680/upload/" + bigImg.getContentDescription());
+                            File f = new File(requireContext().getExternalCacheDir(), "tmp");
+                            f.createNewFile();
+
+                            InputStream is = url.openStream();
+                            OutputStream os = new FileOutputStream(f);
+                            byte[] b = new byte[2048];
+                            int length;
+
+                            while ((length = is.read(b)) != -1) {
+                                os.write(b, 0, length);
+                            }
+
+                            is.close();
+                            os.close();
+
+                            Uri imgUri = FileProvider.getUriForFile(requireContext(), requireContext().getPackageName().concat(".provider"), f);
+                            intent.putExtra(Intent.EXTRA_STREAM, imgUri);
+                            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                            startActivity(Intent.createChooser(intent, "Share image"));
+                        } catch (MalformedURLException e) {
+                            e.printStackTrace();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }.start();
 
             }
         });
