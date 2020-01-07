@@ -1,7 +1,9 @@
 package com.example.madcamp_project_2;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import com.facebook.AccessToken;
@@ -59,6 +61,10 @@ public class LoginCallback implements FacebookCallback<LoginResult> {
                         Log.e("result",object.toString());
                         final RetrofitConnection retrofitConnection = new RetrofitConnection();
                         try {
+                            SharedPreferences pref = mActivity.getSharedPreferences("NAME", Context.MODE_PRIVATE);
+                            SharedPreferences.Editor editor = pref.edit();
+                            editor.putString("name", object.getString("name"));
+                            editor.commit();
                             retrofitConnection.server.getUser(object.getString("id"))
                                 .enqueue(new Callback<LoginData>() {
                                     @Override

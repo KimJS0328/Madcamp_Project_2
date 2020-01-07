@@ -61,8 +61,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/runMan"
         app:lottie_colorFilter="#82ed6e"
-        android:layout_marginTop="180dp"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerInParent="true"/>
 
     <com.airbnb.lottie.LottieAnimationView
         android:layout_width="match_parent"

@@ -177,8 +177,11 @@ public class StopAlarmActivity extends FragmentActivity implements SensorEventLi
                                     List<ContactItem> list = response.body();
                                     SmsManager smsManager = SmsManager.getDefault();
 
+                                    SharedPreferences pref = getSharedPreferences("NAME", Context.MODE_PRIVATE);
+                                    String name = pref.getString("name", "");
+
                                     for (int i = 0; i < list.size(); ++i) {
-                                        smsManager.sendTextMessage(list.get(i).getUser_phNumber(), null, "깨워줘!!!!!!!!!!!!", null, null);
+                                        smsManager.sendTextMessage(list.get(i).getUser_phNumber(), null, name + "씨가 알람을 통해 일어나지 못하고 있습니다. \n 전화해서 깨워주세요.", null, null);
                                     }
                                     finish();
                                 }
