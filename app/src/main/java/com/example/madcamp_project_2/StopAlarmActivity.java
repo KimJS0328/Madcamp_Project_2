@@ -167,16 +167,8 @@ public class StopAlarmActivity extends FragmentActivity implements SensorEventLi
 
                             @Override
                             public void onFailure(Call<List<ContactItem>> call, Throwable t) {
-
                             }
                         });
-
-                        //등록된 친구들에게 자신을 깨워달라는 메시지를 보내기 위해 intent 전달
-                        /*Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                        intent.putExtra("contact", "contact");
-                        setResult(1221, intent);
-                        startActivity(intent);
-                        finish();*/
                     }
                 }, 1500);// 1.5초의 딜레이 후 시작됨
             }
@@ -204,6 +196,11 @@ public class StopAlarmActivity extends FragmentActivity implements SensorEventLi
     protected void onPause() {
         super.onPause();
         sensorManager.unregisterListener(this);
+    }
+
+    @Override
+    public void onBackPressed() {
+        
     }
 
     @Override
