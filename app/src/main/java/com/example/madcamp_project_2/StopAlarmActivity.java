@@ -82,7 +82,7 @@ public class StopAlarmActivity extends FragmentActivity implements SensorEventLi
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_stopalarm);
 
-        SharedPreferences pref = getSharedPreferences("USER_ID", Context.MODE_PRIVATE);
+        SharedPreferences pref = getSharedPreferences("LOGIN", Context.MODE_PRIVATE);
         userid = pref.getString("id", "");
 
         //Sharedpreference 를 통해 count와 stepGoal설정
@@ -187,7 +187,7 @@ public class StopAlarmActivity extends FragmentActivity implements SensorEventLi
                                     List<ContactItem> list = response.body();
                                     SmsManager smsManager = SmsManager.getDefault();
 
-                                    SharedPreferences pref = getSharedPreferences("NAME", Context.MODE_PRIVATE);
+                                    SharedPreferences pref = getSharedPreferences("LOGIN", Context.MODE_PRIVATE);
                                     String name = pref.getString("name", "");
 
                                     for (int i = 0; i < list.size(); ++i) {

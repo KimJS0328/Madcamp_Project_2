@@ -61,37 +61,41 @@ public class LoginCallback implements FacebookCallback<LoginResult> {
                         Log.e("result",object.toString());
                         final RetrofitConnection retrofitConnection = new RetrofitConnection();
                         try {
-                            SharedPreferences pref = mActivity.getSharedPreferences("NAME", Context.MODE_PRIVATE);
+                            SharedPreferences pref = mActivity.getSharedPreferences("LOGIN", Context.MODE_PRIVATE);
                             SharedPreferences.Editor editor = pref.edit();
+                            editor.putString("id", object.getString("id"));
                             editor.putString("name", object.getString("name"));
                             editor.commit();
-                            retrofitConnection.server.getUser(object.getString("id"))
+
+                            final LoginData data = new LoginData();
+                            data.setPasswd("");
+                            data.setUserId(object.getString("id"));
+                            data.setName(object.getString("name"));
+
+                            retrofitConnection.server.getUser(data)
                                 .enqueue(new Callback<LoginData>() {
                                     @Override
                                     public void onResponse(Call<LoginData> call, Response<LoginData> response) {
                                         if (response.isSuccessful()) {
                                             Log.d("Server.findUser", "onSuccess");
                                             Intent intent = new Intent(mActivity, MainActivity.class);
-                                            intent.putExtra("USER_ID", response.body().getUserId());
 
                                             mActivity.startActivity(intent);
                                             mActivity.finish();
                                         }
                                         else {
                                             Log.d("Server.findUser", "onSuccess:NotSuccessful: " + response.body());
-                                            LoginData user = new LoginData();
-                                            user.setUser(object);
-                                            retrofitConnection.server.createUser(user).enqueue(new Callback<LoginData>() {
+                                            retrofitConnection.server.createUser(data).enqueue(new Callback<LoginData>() {
                                                 @Override
                                                 public void onResponse(Call<LoginData> call, Response<LoginData> response) {
                                                     if (response.isSuccessful()) {
                                                         Log.d("Server.createUser", "onSuccess");
                                                         Intent intent = new Intent(mActivity, MainActivity.class);
-                                                        intent.putExtra("USER_ID", response.body().getUserId());
 
                                                         mActivity.startActivity(intent);
                                                         mActivity.finish();
                                                     }
+                                                    Log.d("Server.createUser", "fuck");
                                                 }
 
                                                 @Override

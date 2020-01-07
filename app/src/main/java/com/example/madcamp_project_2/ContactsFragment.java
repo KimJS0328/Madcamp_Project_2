@@ -50,7 +50,7 @@ import retrofit2.Response;
 import static android.app.Activity.RESULT_OK;
 
 public class ContactsFragment extends Fragment {
-    private ContactListAdapter adapter;
+    private ContactListAdapter adapter = null;
     private ArrayList<ContactItem> contactItems = null;
     private ListView listView = null;
     String userId;
@@ -69,6 +69,7 @@ public class ContactsFragment extends Fragment {
         listView = getView().findViewById(R.id.listview1);
         contactItems = new ArrayList<>();
         userId = ((MainActivity)requireContext()).userId;
+        Log.e("이름", userId);
 
         addContactButton = view.findViewById(R.id.addContactButton);
         addContactButton.setOnClickListener(new View.OnClickListener() {
@@ -151,11 +152,18 @@ public class ContactsFragment extends Fragment {
                     adapter = new ContactListAdapter(getContext(), contactItems);
                     listView.setAdapter(adapter);
                 }
+                else {
+                    contactItems = new ArrayList<>();
+                    adapter = new ContactListAdapter(getContext(), contactItems);
+                    listView.setAdapter(adapter);
+                }
             }
 
             @Override
             public void onFailure(Call<List<ContactItem>> call, Throwable t) {
-
+                contactItems = new ArrayList<>();
+                adapter = new ContactListAdapter(getContext(), contactItems);
+                listView.setAdapter(adapter);
             }
         });
     }
@@ -216,7 +224,7 @@ public class ContactsFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data){
         if(requestCode == 0 && resultCode == RESULT_OK){
-            Context context = this.getContext();
+            final Context context = this.getContext();
             ContentResolver result = context.getContentResolver();
             String[] projection = new String[]{
                     ContactsContract.CommonDataKinds.Phone.NUMBER,
@@ -244,6 +252,7 @@ public class ContactsFragment extends Fragment {
             contactItem.setUser_phNumber(cursor.getString(0));
             contactItem.setUser_Name(cursor.getString(1));
             contactItem.setUser_photo("");
+
 
             File f = new File(context.getExternalCacheDir(), "tmp");
             try {

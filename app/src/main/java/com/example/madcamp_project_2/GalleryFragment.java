@@ -97,6 +97,7 @@ public class GalleryFragment extends Fragment implements MainActivity.onBackPres
         addButton = view.findViewById(R.id.addImage);
         infoText = view.findViewById(R.id.Infotext);
         userId = ((MainActivity)requireContext()).userId;
+        Log.e("이름", userId);
 
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -275,11 +276,16 @@ public class GalleryFragment extends Fragment implements MainActivity.onBackPres
                     imgList = new ArrayList<>(response.body());
                     setRecyclerView();
                 }
+                else {
+                    imgList = new ArrayList<>();
+                    setRecyclerView();
+                }
             }
 
             @Override
             public void onFailure(Call<List<String>> call, Throwable t) {
-
+                imgList = new ArrayList<>();
+                setRecyclerView();
             }
         });
 

@@ -38,18 +38,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val pref = getSharedPreferences("USER_ID", Context.MODE_PRIVATE)
-        val editor = pref.edit()
-        if (intent.getStringExtra("USER_ID") != null) {
-            userId = intent.getStringExtra("USER_ID")
-            editor.putString("id", userId)
-            editor.commit()
-        }
-        else {
-            userId = pref.getString("id", "").toString()
-        }
-
-
+        val pref = getSharedPreferences("LOGIN", Context.MODE_PRIVATE)
+        userId = pref.getString("id", "").toString()
 
         val fragmentAdapter = MyPagerAdapter(supportFragmentManager)
         viewpager_main.adapter = fragmentAdapter

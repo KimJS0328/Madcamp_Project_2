@@ -14,8 +14,8 @@ import retrofit2.http.Part;
 import retrofit2.http.Path;
 
 public interface RetrofitInterface {
-    @GET("login/login/{userId}")
-    Call<LoginData> getUser(@Path("userId") String userId);
+    @POST("login/login")
+    Call<LoginData> getUser(@Body LoginData user);
 
     @POST("login/login/create")
     Call<LoginData> createUser(@Body LoginData user);

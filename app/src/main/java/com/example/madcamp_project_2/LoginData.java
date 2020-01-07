@@ -8,21 +8,7 @@ import java.io.Serializable;
 public class LoginData implements Serializable {
     private String userId;
     private String name;
-    private String email;
-    private String gender;
-    private String birthday;
-
-    public String getBirthday() {
-        return birthday;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public String getGender() {
-        return gender;
-    }
+    private String passwd;
 
     public String getName() {
         return name;
@@ -32,17 +18,6 @@ public class LoginData implements Serializable {
         return userId;
     }
 
-    public void setBirthday(String birthday) {
-        this.birthday = birthday;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public void setGender(String gender) {
-        this.gender = gender;
-    }
 
     public void setName(String name) {
         this.name = name;
@@ -52,35 +27,11 @@ public class LoginData implements Serializable {
         this.userId = userId;
     }
 
-    public void setUser(JSONObject object) {
-        try {
-            setUserId(object.getString("id"));
-        } catch (JSONException e) {
-            setUserId("");
-        }
+    public String getPasswd() {
+        return passwd;
+    }
 
-        try {
-            setName(object.getString("name"));
-        } catch (JSONException e) {
-            setName("");
-        }
-
-        try {
-            setEmail(object.getString("email"));
-        } catch (JSONException e) {
-            setEmail("");
-        }
-
-        try {
-            setGender(object.getString("gender"));
-        } catch (JSONException e) {
-            setGender("");
-        }
-
-        try {
-            setBirthday(object.getString("birthday"));
-        } catch (JSONException e) {
-            setBirthday("");
-        }
+    public void setPasswd(String passwd) {
+        this.passwd = passwd;
     }
 }
