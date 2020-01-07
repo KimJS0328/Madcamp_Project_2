@@ -18,6 +18,7 @@ import android.os.CountDownTimer;
 import android.os.Handler;
 import android.telephony.SmsManager;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.DigitalClock;
 import android.widget.ImageView;
@@ -27,6 +28,7 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentActivity;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.bumptech.glide.Glide;
@@ -43,7 +45,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class StopAlarmActivity extends AppCompatActivity implements SensorEventListener {
+public class StopAlarmActivity extends FragmentActivity implements SensorEventListener {
 
     String userid;
 
@@ -71,6 +73,7 @@ public class StopAlarmActivity extends AppCompatActivity implements SensorEventL
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_stopalarm);
 
         SharedPreferences pref = getSharedPreferences("USER_ID", Context.MODE_PRIVATE);
@@ -113,11 +116,10 @@ public class StopAlarmActivity extends AppCompatActivity implements SensorEventL
     }
 
     //뒤로가기 버튼이 동작되지 않게하기 위함
-//    @Override
-//    public void onBackPressed(){
-//        if (count != 0 && mStepDetector >= stepGoal)
-//            super.onBackPressed();
-//    }
+    @Override
+    public void onBackPressed(){
+
+    }
 
     //for countdown
     public void countDownTimer(){
@@ -222,7 +224,7 @@ public class StopAlarmActivity extends AppCompatActivity implements SensorEventL
                         @Override
                         public void run()
                         {
-                            onBackPressed();
+                            finish();
                         }
                     }, 1500);// 1.5초의 딜레이 후 시작됨
                 }
