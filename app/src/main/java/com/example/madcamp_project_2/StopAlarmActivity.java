@@ -199,11 +199,6 @@ public class StopAlarmActivity extends FragmentActivity implements SensorEventLi
     }
 
     @Override
-    public void onBackPressed() {
-        
-    }
-
-    @Override
     public void onSensorChanged(SensorEvent event) {
         if (event.sensor.getType() == Sensor.TYPE_STEP_DETECTOR){
             if (event.values[0] == 1.0f){
