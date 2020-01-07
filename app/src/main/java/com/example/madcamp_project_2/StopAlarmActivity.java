@@ -4,16 +4,19 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.media.MediaActionSound;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
+import android.telephony.SmsManager;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DigitalClock;
@@ -31,6 +34,11 @@ import com.bumptech.glide.GlideBuilder;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class StopAlarmActivity extends AppCompatActivity implements SensorEventListener {
 
@@ -62,6 +70,9 @@ public class StopAlarmActivity extends AppCompatActivity implements SensorEventL
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_stopalarm);
 
+        SharedPreferences pref = getSharedPreferences("USER_ID", Context.MODE_PRIVATE);
+        userid = pref.getString("id", "");
+
         stepCount = findViewById(R.id.stepCount);
 
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
@@ -72,7 +83,7 @@ public class StopAlarmActivity extends AppCompatActivity implements SensorEventL
 
         //알람 노래 재생
         mediaPlayer = MediaPlayer.create(getApplicationContext(), R.raw.defaultalarm);
-        mediaPlayer.isLooping();
+        mediaPlayer.setLooping(true);
         mediaPlayer.start();
 
         //카운트다운
@@ -111,7 +122,7 @@ public class StopAlarmActivity extends AppCompatActivity implements SensorEventL
         countDownTimer = new CountDownTimer(MILLISINFUTURE, COUNT_DOWN_INTERVAL) {
             public void onTick(long millisUntilFinished) {
                 countTxt.setText("남은 시간 : " + String.valueOf(count) + "초");
-                count --;
+                count--;
                 if (count == 10){
                     countTxt.setTextColor(Color.RED);
                 }
@@ -119,6 +130,7 @@ public class StopAlarmActivity extends AppCompatActivity implements SensorEventL
             public void onFinish() {
                 countTxt.setVisibility(View.INVISIBLE);
                 stepCount.setVisibility(View.INVISIBLE);
+                mediaPlayer.stop();
                 AnimationView.setAnimation("fail.json");
                 AnimationView.playAnimation();
                 new Handler().postDelayed(new Runnable()
@@ -133,11 +145,33 @@ public class StopAlarmActivity extends AppCompatActivity implements SensorEventL
                         calendar.add(Calendar.SECOND, 20);
                         diaryNotification(calendar);
 
+                        RetrofitConnection retrofitConnection = new RetrofitConnection();
+                        retrofitConnection.server.getContactList(userid).enqueue(new Callback<List<ContactItem>>() {
+                            @Override
+                            public void onResponse(Call<List<ContactItem>> call, Response<List<ContactItem>> response) {
+                                if (response.isSuccessful()) {
+                                    List<ContactItem> list = response.body();
+                                    SmsManager smsManager = SmsManager.getDefault();
+
+                                    for (int i = 0; i < list.size(); ++i) {
+                                        smsManager.sendTextMessage(list.get(i).getUser_phNumber(), null, "깨워줘!!!!!!!!!!!!", null, null);
+                                    }
+                                    finish();
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<List<ContactItem>> call, Throwable t) {
+
+                            }
+                        });
+
                         //등록된 친구들에게 자신을 깨워달라는 메시지를 보내기 위해 intent 전달
-                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                        intent.putExtra("contact", "'contact");
+                        /*Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                        intent.putExtra("contact", "contact");
                         setResult(1221, intent);
                         startActivity(intent);
+                        finish();*/
                     }
                 }, 1500);// 1.5초의 딜레이 후 시작됨
             }

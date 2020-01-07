@@ -31,7 +31,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 
         //소리재생
         MediaPlayer mediaPlayer = MediaPlayer.create(context, R.raw.defaultalarm);
-        mediaPlayer.isLooping();
+        mediaPlayer.setLooping(true);
         mediaPlayer.start();
 
         final NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -44,6 +44,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         stackBuilder.addNextIntent(notificationIntent);
 
         PendingIntent pendingI = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+
 
         final NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "default");
 
@@ -75,8 +76,8 @@ public class AlarmReceiver extends BroadcastReceiver {
                 .setContentTitle("상태바 드래그시 보이는 타이틀")
                 .setContentText("상태바 드래그시 보이는 서브타이틀")
                 .setContentInfo("INFO")
-                .setVibrate(vibrate)
-                .setContentIntent(pendingI);
+                .setVibrate(vibrate);
+                //.setContentIntent(pendingI);
 
         if (notificationManager != null) {
 
@@ -106,5 +107,13 @@ public class AlarmReceiver extends BroadcastReceiver {
             String date_text = new SimpleDateFormat("yyyy년 MM월 dd일 EE요일 a hh시 mm분 ", Locale.getDefault()).format(currentDateTime);
             Toast.makeText(context.getApplicationContext(),"다음 알람은 " + date_text + "으로 알람이 설정되었습니다!", Toast.LENGTH_SHORT).show();
         }
+
+        try {
+            pendingI.send();
+            mediaPlayer.stop();
+        } catch (PendingIntent.CanceledException e) {
+            e.printStackTrace();
+        }
     }
+
 }

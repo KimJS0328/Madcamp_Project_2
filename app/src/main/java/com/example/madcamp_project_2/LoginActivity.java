@@ -32,7 +32,6 @@ public class LoginActivity extends AppCompatActivity {
     private CallbackManager mCallbackManager;
 
     private Button btn_custom_login;
-    private Button btn_custom_logout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

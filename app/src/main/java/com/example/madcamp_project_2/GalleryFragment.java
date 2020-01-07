@@ -111,7 +111,7 @@ public class GalleryFragment extends Fragment implements MainActivity.onBackPres
             }
         });
 
-        shareButton.setOnClickListener(new View.OnClickListener() {
+        /*shareButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(Intent.ACTION_SEND);
@@ -121,7 +121,7 @@ public class GalleryFragment extends Fragment implements MainActivity.onBackPres
                 intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 startActivity(Intent.createChooser(intent, "Share image"));
             }
-        });
+        });*/
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {

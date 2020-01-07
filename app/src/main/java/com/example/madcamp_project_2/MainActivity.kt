@@ -1,10 +1,12 @@
 package com.example.madcamp_project_2
 
 import android.Manifest
+import android.content.Context
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.telephony.SmsManager
 import android.util.Base64
 import android.util.Log
 import android.view.Menu
@@ -13,6 +15,9 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.facebook.login.LoginManager
 import kotlinx.android.synthetic.main.activity_main.*
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.lang.Exception
 import java.security.MessageDigest
 import android.content.Intent as Intent1
@@ -34,12 +39,18 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         callPermission()
 
-        if (intent.getStringExtra("User_ID") != null)
+        val pref = getSharedPreferences("USER_ID", Context.MODE_PRIVATE)
+        val editor = pref.edit()
+        if (intent.getStringExtra("USER_ID") != null) {
             userId = intent.getStringExtra("USER_ID")
-
-        if (intent.getStringExtra("contact") == "contact"){
-            //
+            editor.putString("id", userId)
+            editor.commit()
         }
+        else {
+            userId = pref.getString("id", "").toString()
+        }
+
+
 
         val fragmentAdapter = MyPagerAdapter(supportFragmentManager)
         viewpager_main.adapter = fragmentAdapter
