@@ -29,11 +29,6 @@ public class AlarmReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent){
 
-        //소리재생
-        MediaPlayer mediaPlayer = MediaPlayer.create(context, R.raw.defaultalarm);
-        mediaPlayer.setLooping(true);
-        mediaPlayer.start();
-
         final NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         Intent notificationIntent = new Intent(context, StopAlarmActivity.class);
         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|
@@ -110,7 +105,6 @@ public class AlarmReceiver extends BroadcastReceiver {
 
         try {
             pendingI.send();
-            mediaPlayer.stop();
         } catch (PendingIntent.CanceledException e) {
             e.printStackTrace();
         }

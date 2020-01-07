@@ -9,11 +9,13 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.Editable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
@@ -34,6 +36,9 @@ public class Tab3Fragment extends Fragment {
 
     String userid;
 
+    EditText editTextsecond;
+    EditText editTextwalk;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -43,6 +48,9 @@ public class Tab3Fragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState){
         super.onViewCreated(view, savedInstanceState);
+
+        editTextsecond = getActivity().findViewById(R.id.editsecond);
+        editTextwalk = getActivity().findViewById(R.id.editwalk);
 
         userid = ((MainActivity)requireContext()).userId;
 
@@ -82,6 +90,22 @@ public class Tab3Fragment extends Fragment {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
+
+                Editable text1 = editTextsecond.getText();
+                String msecond = text1.toString();
+                Integer second = Integer.parseInt(msecond);
+
+                Editable text2 = editTextwalk.getText();
+                String mwalk = text2.toString();
+                Integer walk = Integer.parseInt(mwalk);
+
+                //걸음과 초를 전달
+                SharedPreferences pref = getActivity().getSharedPreferences("MISSION", MODE_PRIVATE);
+                SharedPreferences.Editor editor1 = pref.edit();
+                editor1.putInt("walk", walk);
+                editor1.putInt("second", second);
+                editor1.commit();
+
 
                 int hour, hour_24, minute;
                 String am_pm;
@@ -123,6 +147,8 @@ public class Tab3Fragment extends Fragment {
                 SharedPreferences.Editor editor = getActivity().getSharedPreferences("daily alarm", MODE_PRIVATE).edit();
                 editor.putLong("nextNotifyTime", (long)calendar.getTimeInMillis());
                 editor.apply();
+
+
 
                 diaryNotification(calendar);
             }

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -7,26 +7,46 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="미션의 강도를 정하세요"
+        android:layout_above="@+id/editwalk"
+        android:layout_centerHorizontal="true"
+        android:textSize="20dp"
+        />
+
+
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="초"
+        android:id="@+id/editsecond"
+        android:layout_above="@+id/timePicker"
+        android:layout_centerHorizontal="true"/>
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="걸음수"
+        android:layout_above="@id/editsecond"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/editwalk"/>
+
+
     <TimePicker
         android:id="@+id/timePicker"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/button"
-        app:layout_constraintVertical_chainStyle="packed"
+        android:layout_centerInParent="true"
         android:timePickerMode="spinner"/>
 
     <Button
         android:text="매일 지정된 시간에 알람"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/timePicker"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginTop="20dp"
+        android:layout_below="@+id/timePicker"
+        android:layout_centerHorizontal="true"
         android:id="@+id/button" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</RelativeLayout>

@@ -35,6 +35,7 @@ import androidx.fragment.app.FragmentActivity;
 import com.airbnb.lottie.LottieAnimationView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.GlideBuilder;
+import com.facebook.share.Share;
 
 import java.io.File;
 import java.io.IOException;
@@ -59,14 +60,14 @@ public class StopAlarmActivity extends FragmentActivity implements SensorEventLi
     SensorManager sensorManager;
     Sensor stepDetectorSensor;
     int mStepDetector;
-    int stepGoal = 20;
+    int stepGoal;
 
     //카운트다운 타이머
-    int count = 20;
+    int count;
     TextView countTxt;
     CountDownTimer countDownTimer;
     static final int COUNT_DOWN_INTERVAL = 1000;
-    static final int MILLISINFUTURE = 21 *  COUNT_DOWN_INTERVAL;
+    int MILLISINFUTURE;
 
     //성공시 에니메이션
     LottieAnimationView AnimationView;
@@ -83,6 +84,14 @@ public class StopAlarmActivity extends FragmentActivity implements SensorEventLi
 
         SharedPreferences pref = getSharedPreferences("USER_ID", Context.MODE_PRIVATE);
         userid = pref.getString("id", "");
+
+        //Sharedpreference 를 통해 count와 stepGoal설정
+        SharedPreferences pref1 = getSharedPreferences("MISSION", Context.MODE_PRIVATE);
+        stepGoal = pref1.getInt("walk", 20);
+        count = pref1.getInt("second", 20);
+
+        //count에 맞춰서 countdowntimer 설정 변경
+        MILLISINFUTURE = (count + 1) * COUNT_DOWN_INTERVAL;
 
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         stepDetectorSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR);
@@ -109,6 +118,7 @@ public class StopAlarmActivity extends FragmentActivity implements SensorEventLi
         //progressbar
         progressBar = findViewById(R.id.stepCount);
         progressBar.setVisibility(View.INVISIBLE);
+        progressBar.setMax(stepGoal);
     }
 
 
@@ -181,7 +191,7 @@ public class StopAlarmActivity extends FragmentActivity implements SensorEventLi
                                     String name = pref.getString("name", "");
 
                                     for (int i = 0; i < list.size(); ++i) {
-                                        smsManager.sendTextMessage(list.get(i).getUser_phNumber(), null, name + "씨가 알람을 통해 일어나지 못하고 있습니다. \n 전화해서 깨워주세요.", null, null);
+                                        smsManager.sendTextMessage(list.get(i).getUser_phNumber(), null, name + "님이 잠에서 깨지 못하고 있습니다. \n전화해서 깨워주세요.", null, null);
                                     }
                                     finish();
                                 }
