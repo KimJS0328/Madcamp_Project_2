@@ -165,16 +165,8 @@ public class StopAlarmActivity extends AppCompatActivity implements SensorEventL
 
                             @Override
                             public void onFailure(Call<List<ContactItem>> call, Throwable t) {
-
                             }
                         });
-
-                        //등록된 친구들에게 자신을 깨워달라는 메시지를 보내기 위해 intent 전달
-                        /*Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                        intent.putExtra("contact", "contact");
-                        setResult(1221, intent);
-                        startActivity(intent);
-                        finish();*/
                     }
                 }, 1500);// 1.5초의 딜레이 후 시작됨
             }
@@ -205,6 +197,11 @@ public class StopAlarmActivity extends AppCompatActivity implements SensorEventL
     }
 
     @Override
+    public void onBackPressed() {
+        
+    }
+
+    @Override
     public void onSensorChanged(SensorEvent event) {
         if (event.sensor.getType() == Sensor.TYPE_STEP_DETECTOR){
             if (event.values[0] == 1.0f){
@@ -222,7 +219,7 @@ public class StopAlarmActivity extends AppCompatActivity implements SensorEventL
                         @Override
                         public void run()
                         {
-                            onBackPressed();
+                            finish();
                         }
                     }, 1500);// 1.5초의 딜레이 후 시작됨
                 }
