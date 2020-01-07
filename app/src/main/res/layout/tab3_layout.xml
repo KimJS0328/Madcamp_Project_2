@@ -19,7 +19,7 @@
         android:timePickerMode="spinner"/>
 
     <Button
-        android:text="지정한 시간에 노티피케이션 발생시키기"
+        android:text="매일 지정된 시간에 알람"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintLeft_toLeftOf="parent"

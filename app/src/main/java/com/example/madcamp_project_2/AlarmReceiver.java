@@ -73,8 +73,8 @@ public class AlarmReceiver extends BroadcastReceiver {
                 .setDefaults(NotificationCompat.DEFAULT_ALL)
                 .setWhen(System.currentTimeMillis())
                 .setTicker("{Time to watch some cool stuff!}")
-                .setContentTitle("상태바 드래그시 보이는 타이틀")
-                .setContentText("상태바 드래그시 보이는 서브타이틀")
+                .setContentTitle("알람")
+                .setContentText("알람이 울리고 있어요. 일어나세요!")
                 .setContentInfo("INFO")
                 .setVibrate(vibrate);
                 //.setContentIntent(pendingI);

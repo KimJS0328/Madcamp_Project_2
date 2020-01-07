@@ -3,7 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:id="@+id/background"
+    android:background="@drawable/rainbackground">
 
     <com.airbnb.lottie.LottieAnimationView
         android:layout_width="wrap_content"
@@ -16,32 +18,51 @@
         android:layout_height="wrap_content"
         android:textSize="40dp"
         android:id="@+id/clock"
-        android:layout_centerInParent="true"/>
+        android:layout_marginTop="100dp"
+        android:layout_centerHorizontal="true"
+        android:background="#A6FFFFFF"/>
     <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="알람 끄고 미션 시작"
+        android:layout_width="150dp"
+        android:layout_height="50dp"
+        android:text="미션 시작"
         android:onClick="mOnClick"
         android:id="@+id/stopalarm"
-        android:layout_below="@+id/clock"
+        android:layout_marginTop="300dp"
         android:layout_centerHorizontal="true"
+        android:background="#A6FFFFFF"
+        android:textSize="20dp"
         />
+
+
+    <ProgressBar
+        android:id="@+id/stepCount"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:indeterminate="false"
+        android:visibility="visible"
+        android:progressDrawable="@drawable/circular"
+        android:layout_centerInParent="true"
+        android:max="20"
+        android:progress="0" />
+
     <TextView
         android:id="@+id/countTxT"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="40dp"
-        android:layout_marginTop="50dp"
-        android:textColor="#ff8000"
+        android:layout_marginTop="10dp"
+        android:textColor="#000000"
         android:layout_centerHorizontal="true"
         />
-    <TextView
+
+    <com.airbnb.lottie.LottieAnimationView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="40dp"
-        android:layout_centerInParent="true"
-        android:id="@+id/stepCount"
-        />
+        android:id="@+id/runMan"
+        app:lottie_colorFilter="#82ed6e"
+        android:layout_marginTop="180dp"
+        android:layout_centerHorizontal="true" />
 
     <com.airbnb.lottie.LottieAnimationView
         android:layout_width="match_parent"

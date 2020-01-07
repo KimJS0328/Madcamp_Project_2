@@ -22,6 +22,8 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.DigitalClock;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.os.AsyncTask;
 import android.widget.Toast;
@@ -56,7 +58,6 @@ public class StopAlarmActivity extends FragmentActivity implements SensorEventLi
     //걸음수 재기
     SensorManager sensorManager;
     Sensor stepDetectorSensor;
-    TextView stepCount;
     int mStepDetector;
     int stepGoal = 20;
 
@@ -69,6 +70,10 @@ public class StopAlarmActivity extends FragmentActivity implements SensorEventLi
 
     //성공시 에니메이션
     LottieAnimationView AnimationView;
+    LottieAnimationView runmanView;
+
+    //progressbar
+    ProgressBar progressBar;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -79,8 +84,6 @@ public class StopAlarmActivity extends FragmentActivity implements SensorEventLi
         SharedPreferences pref = getSharedPreferences("USER_ID", Context.MODE_PRIVATE);
         userid = pref.getString("id", "");
 
-        stepCount = findViewById(R.id.stepCount);
-
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         stepDetectorSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR);
 
@@ -88,7 +91,7 @@ public class StopAlarmActivity extends FragmentActivity implements SensorEventLi
         button = findViewById(R.id.stopalarm);
 
         //알람 노래 재생
-        mediaPlayer = MediaPlayer.create(getApplicationContext(), R.raw.defaultalarm);
+        mediaPlayer = MediaPlayer.create(getApplicationContext(), R.raw.square);
         mediaPlayer.setLooping(true);
         mediaPlayer.start();
 
@@ -98,21 +101,36 @@ public class StopAlarmActivity extends FragmentActivity implements SensorEventLi
         //성공 or fail에니메이션
         AnimationView = findViewById(R.id.successIcon);
         AnimationView.loop(false);
+
+        //에니메이션
+        runmanView = findViewById(R.id.runMan);
+        runmanView.loop(true);
+
+        //progressbar
+        progressBar = findViewById(R.id.stepCount);
+        progressBar.setVisibility(View.INVISIBLE);
     }
 
 
     public void mOnClick(View view) {
         mediaPlayer.stop();
+        RelativeLayout relativeLayout = findViewById(R.id.background);
+        relativeLayout.setBackground(null);
 
         //activity 새로 안만들고 재활용함
         button.setVisibility(view.INVISIBLE);
         digitalClock.setVisibility(view.INVISIBLE);
-        stepCount.setText("걸음수 : " + mStepDetector + " / " + stepGoal);
 
         //타이머 시작
         countDownTimer();
         countDownTimer.start();
 
+        //runman 에니메이션
+        runmanView.setAnimation("runman.json");
+        runmanView.playAnimation();
+
+        //progressbar
+        progressBar.setVisibility(View.VISIBLE);
     }
 
     //뒤로가기 버튼이 동작되지 않게하기 위함
@@ -126,7 +144,7 @@ public class StopAlarmActivity extends FragmentActivity implements SensorEventLi
 
         countDownTimer = new CountDownTimer(MILLISINFUTURE, COUNT_DOWN_INTERVAL) {
             public void onTick(long millisUntilFinished) {
-                countTxt.setText("남은 시간 : " + String.valueOf(count) + "초");
+                countTxt.setText("00:"+String.valueOf(count));
                 count--;
                 if (count == 10){
                     countTxt.setTextColor(Color.RED);
@@ -134,8 +152,9 @@ public class StopAlarmActivity extends FragmentActivity implements SensorEventLi
             }
             public void onFinish() {
                 countTxt.setVisibility(View.INVISIBLE);
-                stepCount.setVisibility(View.INVISIBLE);
+                progressBar.setVisibility(View.INVISIBLE);
                 mediaPlayer.stop();
+                runmanView.setVisibility(View.INVISIBLE);
                 AnimationView.setAnimation("fail.json");
                 AnimationView.playAnimation();
                 new Handler().postDelayed(new Runnable()
@@ -203,11 +222,12 @@ public class StopAlarmActivity extends FragmentActivity implements SensorEventLi
         if (event.sensor.getType() == Sensor.TYPE_STEP_DETECTOR){
             if (event.values[0] == 1.0f){
                 mStepDetector++;
-                stepCount.setText("걸음수 : " + mStepDetector + " / " + stepGoal);
+                progressBar.setProgress(mStepDetector);
 
                 //성공시에
                 if(count != 0 && mStepDetector == stepGoal){
-                    stepCount.setVisibility(View.INVISIBLE);
+                    runmanView.setVisibility(View.INVISIBLE);
+                    progressBar.setVisibility(View.INVISIBLE);
                     countTxt.setVisibility(View.INVISIBLE);
                     AnimationView.setAnimation("success.json");
                     AnimationView.playAnimation();
