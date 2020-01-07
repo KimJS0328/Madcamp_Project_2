@@ -197,11 +197,6 @@ public class StopAlarmActivity extends AppCompatActivity implements SensorEventL
     }
 
     @Override
-    public void onBackPressed() {
-        
-    }
-
-    @Override
     public void onSensorChanged(SensorEvent event) {
         if (event.sensor.getType() == Sensor.TYPE_STEP_DETECTOR){
             if (event.values[0] == 1.0f){

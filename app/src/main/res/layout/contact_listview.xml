@@ -37,14 +37,6 @@
             android:text="전화번호"
             />
     </LinearLayout>
-
-    <Button
-        android:layout_width="100dp"
-        android:layout_height="60dp"
-        android:text="전화"
-        android:layout_weight="20"
-        android:id="@+id/callbutton"
-        />
     <View
         android:layout_width="0dp"
         android:layout_height="match_parent"

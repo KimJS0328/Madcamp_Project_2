@@ -13,14 +13,6 @@
     tools:showIn="@layout/activity_main"
     android:id="@+id/content1">
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/addContactButton"
-        android:onClick="addContact"
-        android:text="연락처 추가"
-        />
-
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -32,5 +24,13 @@
         android:layout_height="match_parent"
         android:textFilterEnabled="true"
         android:id="@+id/listview1"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/addContactButton"
+        android:onClick="addContact"
+        android:text="연락처 추가"
+        />
 
 </LinearLayout>
