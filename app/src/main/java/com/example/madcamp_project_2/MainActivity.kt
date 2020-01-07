@@ -37,7 +37,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        callPermission()
 
         val pref = getSharedPreferences("USER_ID", Context.MODE_PRIVATE)
         val editor = pref.edit()
@@ -77,37 +76,6 @@ class MainActivity : AppCompatActivity() {
         startActivity(intent)
         finish()
         return true
-    }
-
-    private fun callPermission() {
-        // Check the SDK version and whether the permission is already granted or not.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(
-                arrayOf(Manifest.permission.READ_CONTACTS),
-                PERMISSIONS_READ_CONTACTS
-            )
-
-        } else {
-            isPermission = true
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(
-                arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
-                PERMISSIONS_READ_EXTERNAL_STORAGE
-            )
-        } else {
-            isPermission = true
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.ACCESS_MEDIA_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(
-                arrayOf(Manifest.permission.ACCESS_MEDIA_LOCATION),
-                PERMISSIONS_ACCESS_MEDIA_LOCATION
-            )
-        } else {
-            isPermission = true
-        }
     }
 
     interface onBackPressedListener {

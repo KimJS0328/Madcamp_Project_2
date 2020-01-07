@@ -30,6 +30,8 @@ public class LoginActivity extends AppCompatActivity {
     private LoginButton btn_facebook_login;
     private LoginCallback mLoginCallback;
     private CallbackManager mCallbackManager;
+    private String[] permissions = {Manifest.permission.READ_CONTACTS, Manifest.permission.READ_EXTERNAL_STORAGE,
+    Manifest.permission.SEND_SMS};
 
     private Button btn_custom_login;
 
@@ -38,15 +40,18 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        int flag = 0;
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
-            if(ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED
-                    && ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-                startAct();
+            for (String permission : permissions) {
+                if (ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_DENIED) {
+                    requestPermissions(permissions, 100);
+                    flag = 1;
+                    break;
+                }
             }
-            else {
-                requestPermissions(new String[]{Manifest.permission.READ_CONTACTS, Manifest.permission.READ_EXTERNAL_STORAGE}, 100);
-                //callback onRequestPermissionsResult
-            }
+            if (flag != 1) startAct();
+
         } else {
             startAct();
         }
